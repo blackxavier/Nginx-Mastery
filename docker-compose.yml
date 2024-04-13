@@ -1,7 +1,7 @@
 version: "3"
 
 services:
-  web:
+  web1:
     build:
       context: ./project/
       dockerfile: Dockerfile # /project/Dockerfile
@@ -14,6 +14,21 @@ services:
       - ./env/dev.env
     # command: python manage.py runserver 0.0.0.0:8080
     command: gunicorn demo.wsgi:application --bind 0.0.0.0:8000
+
+  site:
+    build:
+      context: ./project2/
+      dockerfile: Dockerfile # /project2/Dockerfile
+    volumes:
+      - ./project2/:/usr/src/app/
+      - staticfiles:/usr/src/app/staticfiles # being mirrored as a volume mount so that is can be attached to a directory on the nginx container
+    expose:
+      - 8080
+    env_file:
+      - ./env/dev.env
+    # command: python manage.py runserver 0.0.0.0:8080
+    command: gunicorn demo.wsgi:application --bind 0.0.0.0:8080
+
   nginx:
     build:
       context: ./nginx/
